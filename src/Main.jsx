@@ -29,12 +29,13 @@ export default class Main extends Component {
   };
 
   renderDesmos() {
+    const { plugin } = this.props;
+    const initialGraph = JSON.parse(
+      plugin.getFieldValue(plugin.fieldPath) || "{}"
+    );
+
     const calculator = Desmos.getDesmosInstance();
-    calculator.updateSettings({
-      invertedColors: true,
-      fontSize: 12,
-      backgroundColor: "#4f515a",
-    });
+    calculator.setState(initialGraph.state)
 
     this.setState({
       desmosInstance: calculator,
@@ -48,13 +49,18 @@ export default class Main extends Component {
 
   importDesmos() {
     const { desmosURL, desmosInstance } = this.state;
+    const { plugin } = this.props
+    if(!desmosURL) return plugin.notice("Please Input Desmos Graph Url")
     // https://www.desmos.com/calculator/zwul0vwq80
     axios.get(desmosURL).then((response) => {
+      this.setState({ desmosURL: '' })
       desmosInstance.setState(response.data.state);
       this.props.setPluginFieldValue({
         state: desmosInstance.getState(),
         settings: desmosInstance.settings,
       });
+    }).catch(err => {
+      this.props.plugin.alert(err.message)
     });
   }
 
@@ -66,7 +72,6 @@ export default class Main extends Component {
     const { fieldValue, plugin } = this.props;
     return (
       <div className="container">
-        {/* {JSON.stringify(fieldValue)} */}
         <input
           type="text"
           name="desmosURL"
@@ -80,7 +85,9 @@ export default class Main extends Component {
           Import Desmos
         </button>
         <div id="desmos-calculator" style={{ height: "500px" }} />
-        {/* <button className="desmos-btn">Update Desmos</button> */}
+        <button className="desmos-btn" onClick={this.importDesmos}>
+          Update Desmos
+        </button>
       </div>
     );
   }
