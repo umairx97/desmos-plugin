@@ -12,21 +12,27 @@ import "./style.sass";
   fieldValue: plugin.getFieldValue(plugin.fieldPath),
 }))
 export default class Main extends Component {
+
+  static propTypes = {
+    fieldValue: PropTypes.string,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
-      expressions: [],
       desmosURL: "",
       desmosInstance: null,
     };
 
     this.renderDesmos = this.renderDesmos.bind(this);
     this.importDesmos = this.importDesmos.bind(this);
+    this.updateDesmos = this.updateDesmos.bind(this);
   }
 
-  static propTypes = {
-    fieldValue: PropTypes.bool.isRequired,
-  };
+
+  componentDidMount() {
+    this.renderDesmos();
+  }
 
   renderDesmos() {
     const { plugin } = this.props;
@@ -36,37 +42,43 @@ export default class Main extends Component {
 
     const calculator = Desmos.getDesmosInstance();
     calculator.setState(initialGraph.state)
-
-    this.setState({
-      desmosInstance: calculator,
-      expressions: calculator.getState().expressions.list,
-    });
-
-    calculator.observeEvent("change", () => {
-      this.setState({ expressions: calculator.getState().expressions.list });
-    });
+    this.setState({ desmosInstance: calculator });
   }
 
   importDesmos() {
     const { desmosURL, desmosInstance } = this.state;
-    const { plugin } = this.props
-    if(!desmosURL) return plugin.notice("Please Input Desmos Graph Url")
+    const { plugin, setPluginFieldValue } = this.props
+
+    if (!desmosURL) return plugin.alert("Please Input Desmos Graph Url")
+
     // https://www.desmos.com/calculator/zwul0vwq80
     axios.get(desmosURL).then((response) => {
       this.setState({ desmosURL: '' })
       desmosInstance.setState(response.data.state);
-      this.props.setPluginFieldValue({
+      setPluginFieldValue({
         state: desmosInstance.getState(),
         settings: desmosInstance.settings,
       });
+
+      plugin.notice('Desmos Graph Imported')
     }).catch(err => {
-      this.props.plugin.alert(err.message)
+      plugin.alert(err.message)
     });
   }
 
-  componentDidMount() {
-    this.renderDesmos();
+
+  updateDesmos() {
+    const { desmosInstance } = this.state
+    const { setPluginFieldValue, plugin } = this.props
+
+    setPluginFieldValue({
+      state: desmosInstance.getState(),
+      settings: desmosInstance.settings,
+    });
+
+    plugin.notice('Desmos Graph Updated')
   }
+
 
   render() {
     const { fieldValue, plugin } = this.props;
@@ -85,7 +97,7 @@ export default class Main extends Component {
           Import Desmos
         </button>
         <div id="desmos-calculator" style={{ height: "500px" }} />
-        <button className="desmos-btn" onClick={this.importDesmos}>
+        <button className="desmos-btn" onClick={this.updateDesmos}>
           Update Desmos
         </button>
       </div>
