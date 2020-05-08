@@ -38,6 +38,14 @@ module.exports = {
         ]
       },
       {
+        test: /\.css$/,
+        use: [
+          "style-loader",
+          "css-loader",
+          "sass-loader"
+        ]
+      },
+      {
         test: /\.svg/,
         use: {
           loader: 'svg-url-loader',

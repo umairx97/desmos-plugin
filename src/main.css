@@ -1,0 +1,14 @@
+.desmos-btn {
+  background-color: #4f515a;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: none
+}
+
+.desmos-btn:hover {
+  background-color: #78bcb8;
+}

@@ -1,67 +1,86 @@
 /* eslint-disable */
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Desmos from 'desmos'
-import axios from 'axios'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import axios from "axios";
+import Desmos from "./Desmos";
+import connectToDatoCms from "./connectToDatoCms";
+import "./main.css";
+import "./style.sass";
 
-import connectToDatoCms from './connectToDatoCms';
-import './style.sass';
-
-@connectToDatoCms(plugin => ({
+@connectToDatoCms((plugin) => ({
   developmentMode: plugin.parameters.global.developmentMode,
   fieldValue: plugin.getFieldValue(plugin.fieldPath),
 }))
-
 export default class Main extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      expressions: []
-    }
+      expressions: [],
+      desmosURL: "",
+      desmosInstance: null,
+    };
 
-    this.renderDesmos = this.renderDesmos.bind(this)
-
+    this.renderDesmos = this.renderDesmos.bind(this);
+    this.importDesmos = this.importDesmos.bind(this);
   }
+
   static propTypes = {
     fieldValue: PropTypes.bool.isRequired,
-  }
+  };
 
   renderDesmos() {
-    const { plugin } = this.props
-    const self = this
-    var elt = document.getElementById('desmos-calculator');
-    const calculator = Desmos.GraphingCalculator(elt)
-    calculator.setExpression({ id: 'graph1', latex: 'y=x^2' })
-    self.setState({ expressions: calculator.getState().expressions.list })
+    const calculator = Desmos.getDesmosInstance();
     calculator.updateSettings({
       invertedColors: true,
       fontSize: 12,
-      backgroundColor: '#4f515a'
+      backgroundColor: "#4f515a",
     });
-    calculator.observeEvent('change', function () {
-      self.setState({ expressions: calculator.getState().expressions.list })
-    })
+
+    this.setState({
+      desmosInstance: calculator,
+      expressions: calculator.getState().expressions.list,
+    });
+
+    calculator.observeEvent("change", () => {
+      this.setState({ expressions: calculator.getState().expressions.list });
+    });
+  }
+
+  importDesmos() {
+    const { desmosURL, desmosInstance } = this.state;
+    // https://www.desmos.com/calculator/zwul0vwq80
+    axios.get(desmosURL).then((response) => {
+      desmosInstance.setState(response.data.state);
+      this.props.setPluginFieldValue({
+        state: desmosInstance.getState(),
+        settings: desmosInstance.settings,
+      });
+    });
   }
 
   componentDidMount() {
-    this.renderDesmos()
+    this.renderDesmos();
   }
 
   render() {
-    const { fieldValue } = this.props;
-    console.log("EXP IN STATE", this.state.expressions)
+    const { fieldValue, plugin } = this.props;
     return (
       <div className="container">
-        {fieldValue}
+        {/* {JSON.stringify(fieldValue)} */}
         <input
           type="text"
-          name="desmos"
+          name="desmosURL"
+          value={this.state.desmosURL}
           placeholder="Paste Desmos Url"
-          // value={expressions}
-          onChange={(e) => this.setState({ [e.target.name]: e.target.value })}
+          onChange={(ev) =>
+            this.setState({ [ev.target.name]: ev.target.value })
+          }
         />
-        <br />
-        <div id="desmos-calculator" style={{ height: '500px' }}/>
+        <button className="desmos-btn" onClick={this.importDesmos}>
+          Import Desmos
+        </button>
+        <div id="desmos-calculator" style={{ height: "500px" }} />
+        {/* <button className="desmos-btn">Update Desmos</button> */}
       </div>
     );
   }

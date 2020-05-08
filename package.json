@@ -31,7 +31,8 @@
     "entryPoint": "dist/index.html",
     "pluginType": "field_editor",
     "fieldTypes": [
-      "text"
+      "text", 
+      "json"
     ],
     "parameters": {
       "global": [
