@@ -63,6 +63,7 @@ export default class Main extends Component {
       plugin.notice('Desmos Graph Imported')
     }).catch(err => {
       plugin.alert(err.message)
+      this.setState({ desmosURL: '' })
     });
   }
 
@@ -78,7 +79,6 @@ export default class Main extends Component {
 
     plugin.notice('Desmos Graph Updated')
   }
-
 
   render() {
     const { fieldValue, plugin } = this.props;
