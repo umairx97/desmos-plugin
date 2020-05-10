@@ -1,7 +1,7 @@
 {
   "name": "datocms-plugin-desmos-plugin",
   "homepage": "https://github.com/umairx97/desmos-plugin",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "this is desmos plugin",
   "private": false,
   "main": "index.js",
@@ -36,16 +36,7 @@
       "json"
     ],
     "parameters": {
-      "global": [
-        {
-          "id": "developmentMode",
-          "label": "Development mode",
-          "type": "boolean",
-          "required": true,
-          "default": false,
-          "hint": "Shows debug messages in console"
-        }
-      ],
+      "global": [],
       "instance": []
     }
   },
