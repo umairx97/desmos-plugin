@@ -1,8 +1,9 @@
 {
   "name": "datocms-plugin-desmos-plugin",
   "homepage": "https://github.com/umairx97/desmos-plugin",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "this is desmos plugin",
+  "private": false,
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=development webpack-dev-server --port 5000",
