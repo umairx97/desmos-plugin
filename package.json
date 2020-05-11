@@ -1,7 +1,7 @@
 {
   "name": "datocms-plugin-desmos-plugin",
   "homepage": "https://github.com/umairx97/desmos-plugin",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "This is a desmos plugin for datoCMS",
   "private": false,
   "main": "index.js",
