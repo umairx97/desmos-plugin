@@ -72,7 +72,7 @@
     "yo": "^3.1.1"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "classname": "^0.0.0",
     "desmos": "^1.5.3",
     "html-webpack-tags-plugin": "^2.0.17",
